@@ -1,5 +1,9 @@
-// package stream is responsible for solving a stream cipher
 package main
+
+import (
+	"fmt"
+	"strconv"
+)
 
 var ciphertext2 = []int64{
 	44, 225, 90, 111, 44, 209, 208, 235, 11, 91,
@@ -27,22 +31,39 @@ var ciphertext2 = []int64{
 	121, 130, 167, 8, 97, 234, 143, 115,
 }
 
-func r51decipher() {
-	tapped_bits1 := []int64{13, 16, 17, 18}
-	tapped_bits2 := []int64{20, 21}
-	tapped_bits3 := []int64{7, 20, 21, 22}
+func a51decipher() {
+	firstSystem := strconv.FormatInt(0, 2)
+	thirdSystem := firstSystem
+	secondSystem := firstSystem
+	for i := int64(0); i < 256; i++ {
+        bit := majorityBit(firstSystem, secondSystem, thirdSystem)
+		firstSystem = majorityBitShift(
+			fmt.Sprintf("%08s", strconv.FormatInt(i, 2)),
+			fmt.Sprintf("%08s", strconv.FormatInt(i, 2)),
+			bit,
+		)
+	}
+
 }
 
-// func shift(c string, x string, howManytimes int) string {
-// 	bt := 0
-// 	c = c[0:7] + fmt.Sprint(1)
-// 	for i := 0; i < howManytimes; i++ {
-// 		bt = 0
-// 		for i := 0; i < 8; i++ {
-// 			bt += (int(x[i]) - 48) * (int(c[7-i]) - 48)
-// 		}
-// 		x = x[1:8] + fmt.Sprint(bt%2)
-// 	}
-//
-// 	return x
-// }
+func majorityBit(x1, x2, x3 string) int {
+	if (int(x1[1]-48) + int(x2[2]-48) + int(x3[3]-48)) >= 2 {
+		return 1
+	}
+	return 0
+}
+
+func majorityBitShift(c string, x string) string {
+	bt := 0
+    if x
+	c = c[0:7] + fmt.Sprint(1)
+	for i := 0; i < 8; i++ {
+		bt = 0
+		for i := 0; i < 8; i++ {
+			bt += (int(x[i]) - 48) * (int(c[7-i]) - 48)
+		}
+		x = x[1:8] + fmt.Sprint(bt%2)
+	}
+
+	return x
+}

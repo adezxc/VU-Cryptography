@@ -23,6 +23,8 @@ var ciphertext = []int64{
 }
 
 func main() {
+	a51decipher()
+
 	decipher(127, 8, 127)
 }
 
@@ -38,7 +40,7 @@ func decipher(a, b, c int64) {
 			int(b),
 		)
 		letterNumber, _ = strconv.ParseInt(currLetter, 2, 16)
-		file.WriteString(fmt.Sprintf("%d\n", letterNumber^ciphertext[i]))
+		file.WriteString(fmt.Sprintf("%s", string(rune(letterNumber^ciphertext[i]))))
 	}
 }
 
