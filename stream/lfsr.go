@@ -22,12 +22,6 @@ var ciphertext = []int64{
 	98, 248, 58, 218, 43, 182, 105, 83, 130,
 }
 
-func main() {
-	a51decipher()
-
-	decipher(127, 8, 127)
-}
-
 func decipher(a, b, c int64) {
 	var currLetter string
 	letterNumber := a
@@ -56,4 +50,9 @@ func shift(c string, x string, howManytimes int) string {
 	}
 
 	return x
+}
+
+func toNumber(x string) (n int64) {
+	n, _ = strconv.ParseInt(x, 2, 16)
+	return
 }

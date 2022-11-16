@@ -32,18 +32,71 @@ var ciphertext2 = []int64{
 }
 
 func a51decipher() {
-	firstSystem := strconv.FormatInt(0, 2)
-	thirdSystem := firstSystem
-	secondSystem := firstSystem
+	possibleValues := make([]int64, 0)
+
 	for i := int64(0); i < 256; i++ {
-        bit := majorityBit(firstSystem, secondSystem, thirdSystem)
+		firstSystem := fmt.Sprintf("%08s", strconv.FormatInt(i, 2))
+		thirdSystem := fmt.Sprintf("%08s", strconv.FormatInt(i, 2))
+		secondSystem := fmt.Sprintf("%08s", strconv.FormatInt(i, 2))
+		bit := majorityBit(firstSystem, secondSystem, thirdSystem)
 		firstSystem = majorityBitShift(
 			fmt.Sprintf("%08s", strconv.FormatInt(i, 2)),
 			fmt.Sprintf("%08s", strconv.FormatInt(i, 2)),
-			bit,
+			bit, 1,
 		)
-	}
+		secondSystem = majorityBitShift(
+			fmt.Sprintf("%08s", strconv.FormatInt(i, 2)),
+			fmt.Sprintf("%08s", strconv.FormatInt(i, 2)),
+			bit, 2,
+		)
+		thirdSystem = majorityBitShift(
+			fmt.Sprintf("%08s", strconv.FormatInt(i, 2)),
+			fmt.Sprintf("%08s", strconv.FormatInt(i, 2)),
+			bit, 3,
+		)
+		result := toNumber(firstSystem) ^ toNumber(secondSystem) ^ toNumber(thirdSystem) ^ 44
+		if result >= 65 && result <= 90 {
+			possibleValues = append(possibleValues, i)
+		}
 
+	}
+	fmt.Println(possibleValues)
+
+	for _, value := range possibleValues {
+		tryDecipher(value)
+	}
+}
+
+func tryDecipher(possibleValue int64) {
+	firstSystem := fmt.Sprintf("%08s", strconv.FormatInt(possibleValue, 2))
+	thirdSystem := fmt.Sprintf("%08s", strconv.FormatInt(possibleValue, 2))
+	secondSystem := fmt.Sprintf("%08s", strconv.FormatInt(possibleValue, 2))
+	for i := 0; i < len(ciphertext); i++ {
+		bit := majorityBit(firstSystem, secondSystem, thirdSystem)
+		firstSystem = majorityBitShift(
+			fmt.Sprintf("%08s", strconv.FormatInt(possibleValue, 2)),
+			fmt.Sprintf("%08s", strconv.FormatInt(toNumber(firstSystem), 2)),
+			bit, 1,
+		)
+		secondSystem = majorityBitShift(
+			fmt.Sprintf("%08s", strconv.FormatInt(possibleValue, 2)),
+			fmt.Sprintf("%08s", strconv.FormatInt(toNumber(secondSystem), 2)),
+			bit, 2,
+		)
+		thirdSystem = majorityBitShift(
+			fmt.Sprintf("%08s", strconv.FormatInt(possibleValue, 2)),
+			fmt.Sprintf("%08s", strconv.FormatInt(toNumber(thirdSystem), 2)),
+			bit, 3,
+		)
+		result := (toNumber(firstSystem) ^ toNumber(secondSystem) ^ toNumber(thirdSystem)) ^ ciphertext2[i]
+		if result <= 65 || result >= 90 {
+			// fmt.Println(firstSystem, secondSystem, thirdSystem)
+			// fmt.Println(i)
+			fmt.Println()
+			return
+		}
+		fmt.Println(string(result))
+	}
 }
 
 func majorityBit(x1, x2, x3 string) int {
@@ -53,9 +106,11 @@ func majorityBit(x1, x2, x3 string) int {
 	return 0
 }
 
-func majorityBitShift(c string, x string) string {
+func majorityBitShift(c string, x string, bit, clockedBit int) string {
 	bt := 0
-    if x
+	if int(x[clockedBit])-48 != bit {
+		return x
+	}
 	c = c[0:7] + fmt.Sprint(1)
 	for i := 0; i < 8; i++ {
 		bt = 0
